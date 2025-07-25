@@ -1,11 +1,9 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAnnouncementStore } from "@/lib/state/announcement.state";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { ChevronUp, ChevronDown, Calendar } from "lucide-react";
-import { Announcement } from "@/lib/models/announcement";
 import { AnnouncementCard } from "@/components/announcement.card";
 
 export default function EventsPage() {
