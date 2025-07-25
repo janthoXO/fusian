@@ -12,7 +12,7 @@ const navigationItems = [
 export function Footer() {
   return (
     <footer className="border-t bg-background">
-      <div className="container mx-auto pt-4 flex flex-row justify-around">
+      <div className="w-full py-8 px-4 flex flex-row flex-wrap gap-8 md:justify-around">
         {/* Brand Section */}
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
@@ -27,7 +27,7 @@ export function Footer() {
         {/* Quick Links */}
         <div className="space-y-4">
           <h3 className="font-semibold text-sm">Quick Links</h3>
-          <ul className="space-y-2 text-sm grid grid-cols-2 gap-x-4">
+          <ul className="space-y-2 text-sm grid grid-cols-1 sm:grid-cols-2 gap-x-4">
             {navigationItems.map((item) => (
               <li key={item.href}>
                 <Link
