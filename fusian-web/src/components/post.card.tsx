@@ -1,18 +1,47 @@
-import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent } from "./ui/card";
 import { InstaPost } from "@/lib/models/insta-post";
+import { useEffect, useRef } from "react";
+
+// Extend window type for Instagram embed
+declare global {
+  interface Window {
+    instgrm?: {
+      Embeds: {
+        process: () => void;
+      };
+    };
+  }
+}
 
 export function PostCard({ post }: { post: InstaPost }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Load Instagram embed script if it doesn't exist
+    if (!document.querySelector('script[src*="instagram.com/embed.js"]')) {
+      const script = document.createElement('script');
+      script.src = '//www.instagram.com/embed.js';
+      script.async = true;
+      document.body.appendChild(script);
+    } else {
+      // If script already exists, process embeds
+      if (window.instgrm) {
+        window.instgrm.Embeds.process();
+      }
+    }
+  }, [post.html]);
+
   return (
-    <Card key={post.id} className="hover:shadow-md transition-shadow hover:scale-102 h-full">
-      <CardHeader>
-        <CardTitle>
-          <div className="flex flex-row gap-2 items-center flex-wrap">
-            <h3 className="font-semibold text-xl">{post.caption}</h3>
-          </div>
-        </CardTitle>
-        <CardDescription>
-        </CardDescription>
-      </CardHeader>
+    <Card 
+      ref={cardRef}
+      className="hover:shadow-md transition-shadow hover:scale-102 overflow-hidden"
+    >
+      <CardContent>
+        <div 
+          dangerouslySetInnerHTML={{ __html: post.html }}
+          className="instagram-embed-container"
+        />
+      </CardContent>
     </Card>
   );
 }

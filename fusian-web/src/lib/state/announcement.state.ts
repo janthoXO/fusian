@@ -1,7 +1,6 @@
 import { Announcement } from "../models/announcement";
 import { create } from "zustand";
 import * as Papa from "papaparse";
-import { promises as fs } from 'fs';
 
 type AnnouncementStore = {
   announcements: Announcement[];
@@ -15,6 +14,9 @@ async function loadAnnouncementsFromCSV(): Promise<Announcement[]> {
   }
   const csv = await res.text();
   const parsed = Papa.parse(csv, { header: true, delimiter: ";" });
+  if (parsed.errors.length > 0) {
+    throw new Error("Failed to parse CSV");
+  }
 
   var count = 0;
   const announcements = (parsed.data as any[]).map((row) => ({
