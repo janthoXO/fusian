@@ -1,5 +1,14 @@
 import { InstaPost } from "../models/insta-post";
 
+type InstagramPostResponse = {
+  id: string;
+  media_url: string;
+  permalink: string;
+  media_type: string;
+  caption: string;
+  timestamp: string;
+};
+
 export class InstaPostApi {
   private baseUrl: string;
   private accessToken: string;
@@ -23,16 +32,17 @@ export class InstaPostApi {
       }
 
       const data = await response.json();
-      
+
       // Transform the Instagram API response to our InstaPost model
-      const posts: InstaPost[] = data.data?.map((item: any) => ({
-        id: item.id,
-        url: item.permalink || item.media_url,
-        mediaUrl: item.media_url,
-        mediaType: item.media_type,
-        caption: item.caption,
-        timestamp: item.timestamp,
-      })) || [];
+      const posts: InstaPost[] =
+        data.data?.map((item: InstagramPostResponse) => ({
+          id: item.id,
+          url: item.permalink || item.media_url,
+          mediaUrl: item.media_url,
+          mediaType: item.media_type,
+          caption: item.caption,
+          timestamp: item.timestamp,
+        })) || [];
 
       return posts;
     } catch (error) {
@@ -74,7 +84,7 @@ export class InstaPostApi {
       }
 
       const data = await response.json();
-      
+
       return {
         id: data.id,
         url: data.permalink || data.media_url,

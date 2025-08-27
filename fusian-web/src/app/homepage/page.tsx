@@ -20,7 +20,7 @@ export default function Homepage() {
   useEffect(() => {
     // Fetch posts when the component mounts
     fetchPosts();
-  }, []);
+  }, [fetchPosts]);
 
   // Show only the first 3 announcements
   const displayedAnnouncements = announcements.slice(todayIndex - 3, todayIndex);
