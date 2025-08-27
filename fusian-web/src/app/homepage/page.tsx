@@ -23,7 +23,8 @@ export default function Homepage() {
   }, [fetchPosts]);
 
   // Show only the first 3 announcements
-  const displayedAnnouncements = announcements.slice(todayIndex - 3, todayIndex);
+  const startIndex = Math.max(0, todayIndex - 3);
+  const displayedAnnouncements = announcements.slice(startIndex, todayIndex);
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -39,9 +40,7 @@ export default function Homepage() {
 
       {/* Instagram Section */}
       <section className="flex flex-row py-10 justify-center">
-        <Carousel
-          className="w-full"
-        >
+        <Carousel className="w-full">
           <CarouselContent className="m-3">
             {posts?.map((post) => (
               <CarouselItem key={post.id} className="max-w-xs lg:max-w-3xs">
