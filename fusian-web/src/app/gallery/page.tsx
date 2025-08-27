@@ -10,7 +10,7 @@ export default function GalleryPage() {
   useEffect(() => {
     // Fetch posts when the component mounts
     fetchPosts();
-  }, []);
+  }, [fetchPosts]);
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -18,8 +18,8 @@ export default function GalleryPage() {
         <h1 className="text-4xl font-bold mb-8">Gallery</h1>
         <div className="flex flex-wrap gap-4">
           {posts?.map((post) => (
-            <div className="basis-3xs h-96">
-              <PostCard key={post.id} post={post}></PostCard>
+            <div key={post.id} className="basis-3xs h-96">
+              <PostCard post={post}></PostCard>
             </div>
           ))}
         </div>
