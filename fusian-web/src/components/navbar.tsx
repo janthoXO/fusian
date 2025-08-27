@@ -18,7 +18,6 @@ export const navigationItems = [
   { title: "About", href: "/about" },
   { title: "Events", href: "/events" },
   { title: "Gallery", href: "/gallery" },
-  { title: "Contact", href: "/contact" },
 ];
 
 export function Navbar() {
