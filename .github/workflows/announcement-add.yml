@@ -1,0 +1,65 @@
+name: Add Announcement
+
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: 'Announcement Title'
+        required: true
+        type: string
+      content:
+        description: 'Announcement Content'
+        required: true
+        type: string
+      unixtimestamp:
+        description: 'Unix Timestamp (leave empty for current time)'
+        required: false
+        type: string
+
+jobs:
+  add-announcement:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set timestamp
+        id: timestamp
+        run: |
+          if [ -z "${{ github.event.inputs.unixtimestamp }}" ]; then
+            # if no timestamp is provided, use current time
+            echo "timestamp=$(date +%s)" >> $GITHUB_OUTPUT
+          else
+            echo "timestamp=${{ github.event.inputs.unixtimestamp }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Escape CSV content
+        id: escape
+        run: |
+          # Escape semicolons and quotes for CSV
+          title=$(echo "${{ github.event.inputs.title }}" | sed 's/;/\\;/g' | sed 's/"/\\"/g')
+          content=$(echo "${{ github.event.inputs.content }}" | sed 's/;/\\;/g' | sed 's/"/\\"/g')
+          echo "title=$title" >> $GITHUB_OUTPUT
+          echo "content=$content" >> $GITHUB_OUTPUT
+
+      - name: Add to CSV
+        run: |
+          cd fusian-web/public
+          echo "${{ steps.escape.outputs.title }};${{ steps.escape.outputs.content }};${{ steps.timestamp.outputs.timestamp }}" >> announcements.csv
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Add announcement: ${{ github.event.inputs.title }}"
+          title: "Add announcement: ${{ github.event.inputs.title }}"
+          body: |
+            ## New Announcement Added
+            
+            **Title:** ${{ github.event.inputs.title }}
+            **Content:** ${{ github.event.inputs.content }}
+            **Timestamp:** ${{ steps.timestamp.outputs.timestamp }}
+            
+            This PR was automatically created by the Add Announcement workflow.
+          branch: "add-announcement-${{ steps.timestamp.outputs.timestamp }}"
+          delete-branch: true
