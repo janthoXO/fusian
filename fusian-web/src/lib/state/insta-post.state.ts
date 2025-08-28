@@ -8,10 +8,12 @@ type PostStore = {
 
 type InstaPostCSVEntry = {
   html: string;
-}
+};
 
 async function loadPostsFromCSV(): Promise<InstaPost[]> {
-  const res = await fetch("/insta-posts.csv");
+  const base = (process.env.NEXT_PUBLIC_BASE_PATH ?? "").replace(/\/$/, ""); // no trailing slash
+  const url = `${base}/insta-posts.csv`;
+  const res = await fetch(url);
   if (!res.ok) {
     throw new Error(`Failed to load insta-posts.csv: ${res.statusText}`);
   }
