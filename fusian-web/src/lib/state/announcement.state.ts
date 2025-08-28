@@ -11,10 +11,12 @@ type AnnouncementCSVEntry = {
   title: string;
   content: string;
   unixtimestamp: number;
-}
+};
 
 async function loadAnnouncementsFromCSV(): Promise<Announcement[]> {
-  const res = await fetch("/announcements.csv");
+  const base = (process.env.NEXT_PUBLIC_BASE_PATH ?? "").replace(/\/$/, ""); // no trailing slash
+  const url = `${base}/announcements.csv`;
+  const res = await fetch(url);
   if (!res.ok) {
     throw new Error(`Failed to load announcements.csv: ${res.statusText}`);
   }
