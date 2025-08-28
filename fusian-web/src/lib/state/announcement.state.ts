@@ -7,6 +7,12 @@ type AnnouncementStore = {
   todayIndex: number;
 };
 
+type AnnouncementCSVEntry = {
+  title: string;
+  content: string;
+  unixtimestamp: number;
+}
+
 async function loadAnnouncementsFromCSV(): Promise<Announcement[]> {
   const res = await fetch("/announcements.csv");
   if (!res.ok) {
@@ -18,12 +24,12 @@ async function loadAnnouncementsFromCSV(): Promise<Announcement[]> {
     throw new Error("Failed to parse CSV");
   }
 
-  var count = 0;
-  const announcements = (parsed.data as any[]).map((row) => ({
+  let count = 0;
+  const announcements = (parsed.data as AnnouncementCSVEntry[]).map((entry) => ({
     id: String(count++),
-    title: row.title as string,
-    content: row.content as string,
-    timestamp: new Date(row.unixtimestamp * 1000),
+    title: entry.title,
+    content: entry.content,
+    timestamp: new Date(entry.unixtimestamp * 1000),
   }));
   return announcements;
 }

@@ -6,6 +6,10 @@ type PostStore = {
   posts: InstaPost[];
 };
 
+type InstaPostCSVEntry = {
+  html: string;
+}
+
 async function loadPostsFromCSV(): Promise<InstaPost[]> {
   const res = await fetch("/insta-posts.csv");
   if (!res.ok) {
@@ -18,10 +22,10 @@ async function loadPostsFromCSV(): Promise<InstaPost[]> {
     throw new Error("Failed to parse CSV");
   }
 
-  var count = 0;
-  const posts = (parsed.data as any[]).map((row) => ({
+  let count = 0;
+  const posts = (parsed.data as InstaPostCSVEntry[]).map((entry) => ({
     id: String(count++),
-    html: row.html as string,
+    html: entry.html,
   }));
   return posts;
 }

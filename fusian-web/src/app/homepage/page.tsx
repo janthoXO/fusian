@@ -37,10 +37,10 @@ export default function Homepage() {
         <Carousel className="w-full">
           <CarouselContent className="flex m-3 items-center">
             {posts?.map((post) => (
-              <div>
-              <CarouselItem key={post.id}>
-                  <PostCard key={post.id} post={post}></PostCard>
-              </CarouselItem>
+              <div key={post.id}>
+                <CarouselItem>
+                  <PostCard post={post}></PostCard>
+                </CarouselItem>
               </div>
             ))}
           </CarouselContent>
