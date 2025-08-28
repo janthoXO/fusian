@@ -7,9 +7,10 @@ import { ChevronUp, ChevronDown, Calendar } from "lucide-react";
 import { AnnouncementCard } from "@/components/announcement.card";
 
 export default function EventsPage() {
+  const shownEvents = 3;
   const { announcements, todayIndex } = useAnnouncementStore();
-  const [pastEventsCount, setPastEventsCount] = useState(3);
-  const [futureEventsCount, setFutureEventsCount] = useState(3);
+  const [pastEventsCount, setPastEventsCount] = useState(shownEvents);
+  const [futureEventsCount, setFutureEventsCount] = useState(shownEvents);
 
   // Separate past and future events
   const pastEvents = announcements.slice(todayIndex);
@@ -20,19 +21,19 @@ export default function EventsPage() {
   const futureEventsToShow = futureEvents.slice(-futureEventsCount);
 
   const handleShowMoreFuture = () => {
-    setFutureEventsCount((prev) => Math.min(prev + 3, futureEvents.length));
+    setFutureEventsCount((prev) => Math.min(prev + shownEvents, futureEvents.length));
   };
 
   const handleShowLessFuture = () => {
-    setFutureEventsCount(3);
+    setFutureEventsCount(shownEvents);
   };
 
   const handleShowMorePast = () => {
-    setPastEventsCount((prev) => Math.min(prev + 3, pastEvents.length));
+    setPastEventsCount((prev) => Math.min(prev + shownEvents, pastEvents.length));
   };
 
   const handleShowLessPast = () => {
-    setPastEventsCount(3);
+    setPastEventsCount(shownEvents);
   };
 
   return (
@@ -51,7 +52,7 @@ export default function EventsPage() {
         )}
 
         {/* Show Less Future Events Button */}
-        {futureEventsCount > 3 && (
+        {futureEventsCount > shownEvents && !(futureEvents.length > futureEventsCount) && (
           <div className="mb-6 flex justify-center">
             <Button variant="outline" onClick={handleShowLessFuture} className="flex items-center gap-2">
               <ChevronDown className="w-4 h-4" />
@@ -106,7 +107,7 @@ export default function EventsPage() {
         )}
 
         {/* Show Less Past Events Button */}
-        {pastEventsCount > 3 && (
+        {pastEventsCount > shownEvents && !(pastEvents.length > pastEventsCount) && (
           <div className="flex justify-center">
             <Button variant="outline" onClick={handleShowLessPast} className="flex items-center gap-2">
               <ChevronUp className="w-4 h-4" />

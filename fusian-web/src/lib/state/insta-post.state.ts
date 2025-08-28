@@ -1,54 +1,44 @@
 import { create } from "zustand";
 import { InstaPost } from "../models/insta-post";
+import * as Papa from "papaparse";
 
 type PostStore = {
-  posts: Map<string, InstaPost>;
-  loading: boolean;
-  error: string | null;
-  // Actions
-  addAll: (posts: InstaPost[]) => void;
-  set: (post: InstaPost) => void; // adds or overwrites
-  delete: (postId: string) => void;
-  clear: () => void;
-  setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
-  clearError: () => void;
+  posts: InstaPost[];
 };
 
-const initialState = {
-  posts: new Map<string, InstaPost>(),
-  loading: false,
-  error: null,
-};
+type InstaPostCSVEntry = {
+  html: string;
+}
 
-export const usePostStore = create<PostStore>((set, get) => ({
-  ...initialState,
-  // Actions
-  addAll: (posts) => {
-    const { posts: currentPosts } = get();
-    const newPosts = new Map(currentPosts);
-    posts.forEach(post => {
-      if (post.id) {
-        newPosts.set(post.id, post);
-      }
-    });
-    set({ posts: newPosts, error: null });
-  },
-  set: (post) => {
-    if (!post.id) return;
-    const { posts: currentPosts } = get();
-    const newPosts = new Map(currentPosts);
-    newPosts.set(post.id, post);
-    set({ posts: newPosts });
-  },
-  delete: (postId) => {
-    const { posts: currentPosts } = get();
-    const newPosts = new Map(currentPosts);
-    newPosts.delete(postId);
-    set({ posts: newPosts });
-  },
-  clear: () => set({ posts: new Map<string, InstaPost>(), error: null }),
-  setLoading: (loading) => set({ loading }),
-  setError: (error) => set({ error, loading: false }),
-  clearError: () => set({ error: null }),
-}));
+async function loadPostsFromCSV(): Promise<InstaPost[]> {
+  const res = await fetch("/insta-posts.csv");
+  if (!res.ok) {
+    throw new Error(`Failed to load insta-posts.csv: ${res.statusText}`);
+  }
+  const csv = await res.text();
+  const parsed = Papa.parse(csv, { header: true, delimiter: ";" });
+  console.log(parsed);
+  if (parsed.errors.length > 0) {
+    throw new Error("Failed to parse CSV");
+  }
+
+  let count = 0;
+  const posts = (parsed.data as InstaPostCSVEntry[]).map((entry) => ({
+    id: String(count++),
+    html: entry.html,
+  }));
+  return posts;
+}
+
+export const usePostStore = create<PostStore>((set) => {
+  const initialState: PostStore = {
+    posts: [],
+  };
+
+  // Load posts from CSV
+  loadPostsFromCSV().then((posts) => {
+    set({ posts });
+  });
+
+  return initialState;
+});

@@ -1,0 +1,62 @@
+name: Add Instagram Post
+
+on:
+  workflow_dispatch:
+    inputs:
+      html:
+        description: 'Instagram Embed HTML (from Instagram embed code)'
+        required: true
+        type: string
+
+jobs:
+  add-insta-post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Process HTML for CSV
+        id: process
+        run: |
+          # Escape quotes by doubling them and wrap in quotes
+          html="${{ github.event.inputs.html }}"
+          # Replace all " with ""
+          escaped_html=$(echo "$html" | sed 's/"/\"\"/g')
+          # Wrap the whole thing in quotes
+          csv_html="\"$escaped_html\""
+          
+          # Save to output (handle multiline)
+          {
+            echo 'html<<EOF'
+            echo "$csv_html"
+            echo 'EOF'
+          } >> $GITHUB_OUTPUT
+
+      - name: Add to CSV
+        run: |
+          cd fusian-web/public
+          echo '${{ steps.process.outputs.html }}' >> insta-posts.csv
+
+      - name: Generate timestamp for branch name
+        id: branch-timestamp
+        run: echo "timestamp=$(date +%s)" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Add Instagram post"
+          title: "Add Instagram post"
+          body: |
+            ## New Instagram Post Added
+            
+            This PR adds a new Instagram post embed to the gallery.
+            
+            **HTML Preview:**
+            ```html
+            ${{ github.event.inputs.html }}
+            ```
+            
+            This PR was automatically created by the Add Instagram Post workflow.
+          branch: "add-insta-post-${{ steps.branch-timestamp.outputs.timestamp }}"
+          delete-branch: true
