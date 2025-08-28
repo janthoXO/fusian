@@ -35,7 +35,7 @@ jobs:
       - name: Add to CSV
         run: |
           cd fusian-web/public
-          echo '${{ steps.process.outputs.html }}' >> insta-posts.csv
+          printf "\n${{ steps.process.outputs.html }}" >> insta-posts.csv
 
       - name: Generate timestamp for branch name
         id: branch-timestamp

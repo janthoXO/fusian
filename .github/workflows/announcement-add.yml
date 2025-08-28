@@ -45,7 +45,7 @@ jobs:
       - name: Add to CSV
         run: |
           cd fusian-web/public
-          echo "${{ steps.escape.outputs.title }};${{ steps.escape.outputs.content }};${{ steps.timestamp.outputs.timestamp }}" >> announcements.csv
+          printf "\n${{ steps.escape.outputs.title }};${{ steps.escape.outputs.content }};${{ steps.timestamp.outputs.timestamp }}" >> announcements.csv
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
